@@ -4,14 +4,31 @@ An automated web-based tool that helps users apply to jobs efficiently by reduci
 
 ---
 
-## 📌 Features
+## ✨ Features
 
-- 🔍 Automatically searches for relevant job listings
-- 📄 Auto-fills application forms
-- ⚡ Saves time by applying to multiple jobs quickly
-- 🎯 Custom filters based on role, location, and preferences
-- 📊 Tracks applied jobs (optional)
+🔍 Automated job search based on keywords and filters
 
+⚡ One-click or fully automated job applications
+
+🧠 Smart form filling (handles input fields & dropdowns)
+
+📄 Resume handling and auto-upload
+
+🔄 Multi-job application loop
+
+🛡️ Basic anti-detection / human-like interaction
+
+📊 Logging and tracking applied jobs
+
+🆕 Recent Updates
+
+Added: Company Access
+
+Improved: UI
+
+Fixed: Login Issues
+
+Optimized: Faster execution and better stability
 ---
 
 ## 🛠️ Tech Stack
