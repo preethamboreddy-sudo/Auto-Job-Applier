@@ -1,696 +1,532 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BURA Jobs | Auto-fill Application</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav class="navbar glass">
-      <div class="nav-brand" onclick="app.navigate('jobs-view')">
-        <span class="material-icons-round brand-icon">work_outline</span>
-        <h1>BURA Jobs</h1>
-      </div>
-      <div class="nav-links" id="nav-links">
-        <!-- Dynamically populated based on auth state -->
-      </div>
-    </nav>
 
-    <!-- Main Container -->
-    <main class="main-container">
-      <!-- View: Landing Page -->
-      <section id="landing-view" class="view">
-        <!-- Hero Section -->
-        <div class="hero-section fade-in-up">
-          <div class="hero-content">
-            <h1 class="hero-title">
-              Apply to <span class="text-gradient">Dream Jobs</span> in One
-              Click.
-            </h1>
-            <p class="hero-subtitle">
-              BURA Jobs uses intelligent auto-fill technology to match your
-              profile with top roles instantly. Stop typing, start applying.
-            </p>
-            <div class="hero-actions">
-              <button
-                class="btn btn-primary btn-large"
-                onclick="app.navigate('auth-view')"
-              >
-                Get Started Now
-              </button>
-              <button
-                class="btn btn-secondary btn-large"
-                onclick="
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BURA Jobs | Auto-fill Application</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar glass">
+    <div class="nav-brand" onclick="app.navigate('jobs-view')">
+      <span class="material-icons-round brand-icon">work_outline</span>
+      <h1>BURA Jobs</h1>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <!-- Dynamically populated based on auth state -->
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- View: Landing Page -->
+    <section id="landing-view" class="view">
+      <!-- Hero Section -->
+      <div class="hero-section fade-in-up">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            Apply to <span class="text-gradient">Dream Jobs</span> in One
+            Click.
+          </h1>
+          <p class="hero-subtitle">
+            BURA Jobs uses intelligent auto-fill technology to match your
+            profile with top roles instantly. Stop typing, start applying.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-large" onclick="app.navigate('auth-view')">
+              Get Started Now
+            </button>
+            <button class="btn btn-secondary btn-large" onclick="
                   document
                     .getElementById('about-section')
                     .scrollIntoView({ behavior: 'smooth' })
-                "
-              >
-                Learn More
-              </button>
-            </div>
-
-            <div class="hero-stats">
-              <div class="stat-item glass-panel">
-                <h3>10k+</h3>
-                <span>Active Users</span>
-              </div>
-              <div class="stat-item glass-panel">
-                <h3>500+</h3>
-                <span>Partner Companies</span>
-              </div>
-              <div class="stat-item glass-panel">
-                <h3>98%</h3>
-                <span>Application Success</span>
-              </div>
-            </div>
-          </div>
-          <div class="hero-visual glass-panel">
-            <img
-              src="hero.jpg"
-              alt="Futuristic Job Dashboard"
-              class="img-fluid floating-img"
-            />
-          </div>
-        </div>
-
-        <!-- About Section -->
-        <div id="about-section" class="about-section fade-in">
-          <div class="about-visual glass-panel">
-            <img
-              src="villan.jpg"
-              alt="Auto-fill Profile Concept"
-              class="img-fluid floating-img-delayed"
-            />
-          </div>
-          <div class="about-content">
-            <h2>
-              Your Digital Twin for
-              <span class="text-gradient">Career Growth</span>
-            </h2>
-            <p>
-              We've eliminated the friction of modern job hunting. Create a
-              comprehensive profile once, detailing your experience, skills, and
-              academic background.
-            </p>
-            <ul class="feature-list">
-              <li>
-                <span class="material-icons-round text-primary">bolt</span>
-                Lightning fast one-click applications
-              </li>
-              <li>
-                <span class="material-icons-round text-primary">security</span>
-                Enterprise-grade data encryption
-              </li>
-              <li>
-                <span class="material-icons-round text-primary"
-                  >auto_awesome</span
-                >
-                Smart skill-matching algorithms
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Analytics Section -->
-        <div class="analytics-section fade-in-up">
-          <div class="analytics-header text-center">
-            <h2>Proven Results</h2>
-            <p>See how BURA Jobs is transforming the hiring landscape.</p>
-          </div>
-          <div class="charts-grid">
-            <div class="chart-card glass-panel">
-              <h3>Applications Processed</h3>
-              <canvas id="applicationsChart"></canvas>
-            </div>
-            <div class="chart-card glass-panel">
-              <h3>Placements by Industry</h3>
-              <canvas id="industryChart"></canvas>
-            </div>
-          </div>
-          <div class="cta-wrapper text-center mt-2">
-            <button
-              class="btn btn-primary btn-large glow-hover"
-              onclick="app.navigate('auth-view')"
-            >
-              Join the Revolution
-              <span
-                class="material-icons-round"
-                style="vertical-align: middle; margin-left: 0.5rem"
-                >arrow_forward</span
-              >
+                ">
+              Learn More
             </button>
           </div>
-        </div>
-      </section>
 
-      <!-- View: Authentication (Login/Register) -->
-      <section id="auth-view" class="view hidden">
-        <div class="auth-card glass-panel fade-in-up">
-          <h2 id="auth-title">Create Account</h2>
-          <p class="auth-subtitle">
-            Join us to auto-fill your job applications in one click.
+          <div class="hero-stats">
+            <div class="stat-item glass-panel">
+              <h3>10k+</h3>
+              <span>Active Users</span>
+            </div>
+            <div class="stat-item glass-panel">
+              <h3>500+</h3>
+              <span>Partner Companies</span>
+            </div>
+            <div class="stat-item glass-panel">
+              <h3>98%</h3>
+              <span>Application Success</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual glass-panel">
+          <img src="hero.jpg" alt="Futuristic Job Dashboard" class="img-fluid floating-img" />
+        </div>
+      </div>
+
+      <!-- About Section -->
+      <div id="about-section" class="about-section fade-in">
+        <div class="about-visual glass-panel">
+          <img src="villan.jpg" alt="Auto-fill Profile Concept" class="img-fluid floating-img-delayed" />
+        </div>
+        <div class="about-content">
+          <h2>
+            Your Digital Twin for
+            <span class="text-gradient">Career Growth</span>
+          </h2>
+          <p>
+            We've eliminated the friction of modern job hunting. Create a
+            comprehensive profile once, detailing your experience, skills, and
+            academic background.
           </p>
+          <ul class="feature-list">
+            <li>
+              <span class="material-icons-round text-primary">bolt</span>
+              Lightning fast one-click applications
+            </li>
+            <li>
+              <span class="material-icons-round text-primary">security</span>
+              Enterprise-grade data encryption
+            </li>
+            <li>
+              <span class="material-icons-round text-primary">auto_awesome</span>
+              Smart skill-matching algorithms
+            </li>
+          </ul>
+        </div>
+      </div>
 
-          <form id="auth-form">
-            <div class="input-group">
-              <label for="auth-email">Email</label>
-              <input
-                type="email"
-                id="auth-email"
-                required
-                placeholder="name@example.com"
-              />
-            </div>
-            <div class="input-group">
-              <label for="auth-password">Password</label>
-              <input
-                type="password"
-                id="auth-password"
-                required
-                placeholder="••••••••"
-              />
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">
-              Sign Up
-            </button>
-          </form>
-
-          <div class="auth-toggle">
-            <span id="auth-toggle-text">Already have an account?</span>
-            <a href="#" id="auth-toggle-link">Login here</a>
+      <!-- Analytics Section -->
+      <div class="analytics-section fade-in-up">
+        <div class="analytics-header text-center">
+          <h2>Proven Results</h2>
+          <p>See how BURA Jobs is transforming the hiring landscape.</p>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card glass-panel">
+            <h3>Applications Processed</h3>
+            <canvas id="applicationsChart"></canvas>
+          </div>
+          <div class="chart-card glass-panel">
+            <h3>Placements by Industry</h3>
+            <canvas id="industryChart"></canvas>
           </div>
         </div>
-      </section>
+        <div class="cta-wrapper text-center mt-2">
+          <button class="btn btn-primary btn-large glow-hover" onclick="app.navigate('auth-view')">
+            Join the Revolution
+            <span class="material-icons-round" style="vertical-align: middle; margin-left: 0.5rem">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </section>
 
-      <!-- View: User Profile Form -->
-      <section id="profile-view" class="view hidden">
-        <div
-          class="profile-header fade-in"
-          style="
+    <!-- View: Authentication (Login/Register) -->
+    <section id="auth-view" class="view hidden">
+      <div class="auth-card glass-panel fade-in-up">
+        <h2 id="auth-title">Create Account</h2>
+        <p class="auth-subtitle">
+          Join us to auto-fill your job applications in one click.
+        </p>
+
+        <form id="auth-form">
+          <div class="input-group">
+            <label for="auth-email">Email</label>
+            <input type="email" id="auth-email" required placeholder="name@example.com" />
+          </div>
+          <div class="input-group">
+            <label for="auth-password">Password</label>
+            <input type="password" id="auth-password" required placeholder="••••••••" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Sign Up
+          </button>
+        </form>
+
+        <div class="auth-toggle">
+          <span id="auth-toggle-text">Already have an account?</span>
+          <a href="#" id="auth-toggle-link">Login here</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: User Profile Form -->
+    <section id="profile-view" class="view hidden">
+      <div class="profile-header fade-in" style="
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-          "
-        >
-          <div style="flex: 1; padding-right: 2rem">
-            <h2>Complete Your Profile</h2>
-            <p>Fill out your details once, apply anywhere instantly.</p>
-            <div class="progress-container mt-1">
-              <div
-                style="
+          ">
+        <div style="flex: 1; padding-right: 2rem">
+          <h2>Complete Your Profile</h2>
+          <p>Fill out your details once, apply anywhere instantly.</p>
+          <div class="progress-container mt-1">
+            <div style="
                   display: flex;
                   justify-content: space-between;
                   margin-bottom: 0.5rem;
                   font-size: 0.85rem;
-                "
-              >
-                <span style="color: var(--text-secondary)"
-                  >Profile Completion</span
-                >
-                <span
-                  id="profile-progress-text"
-                  class="text-gradient"
-                  style="font-weight: 600"
-                  >0%</span
-                >
-              </div>
-              <div
-                class="progress-bar-bg"
-                style="
+                ">
+              <span style="color: var(--text-secondary)">Profile Completion</span>
+              <span id="profile-progress-text" class="text-gradient" style="font-weight: 600">0%</span>
+            </div>
+            <div class="progress-bar-bg" style="
                   height: 8px;
                   background: rgba(255, 255, 255, 0.1);
                   border-radius: 4px;
                   overflow: hidden;
-                "
-              >
-                <div
-                  id="profile-progress-fill"
-                  style="
+                ">
+              <div id="profile-progress-fill" style="
                     height: 100%;
                     width: 0%;
                     background: linear-gradient(90deg, #58a6ff, #bc8cff);
                     border-radius: 4px;
                     transition: width 0.4s ease;
-                  "
-                ></div>
+                  "></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.5rem"
+          onclick="app.downloadResume()" id="btn-download-resume" disabled>
+          <span class="material-icons-round">picture_as_pdf</span> Download
+          Resume
+        </button>
+      </div>
+
+      <form id="profile-form" class="profile-form fade-in-up">
+        <!-- Personal Details Section -->
+        <div class="form-section glass-panel">
+          <h3>Personal Information</h3>
+          <div class="form-grid">
+            <div class="input-group">
+              <label>First Name*</label>
+              <input type="text" name="firstName" required />
+            </div>
+            <div class="input-group">
+              <label>Middle Name</label>
+              <input type="text" name="middleName" />
+            </div>
+            <div class="input-group">
+              <label>Last Name*</label>
+              <input type="text" name="lastName" required />
+            </div>
+            <div class="input-group">
+              <label>Gender</label>
+              <select name="gender">
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Phone Number*</label>
+              <input type="tel" name="phone" required />
+            </div>
+            <div class="input-group">
+              <label>Date of Birth</label>
+              <input type="date" name="dob" />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group full-width">
+              <label>Address*</label>
+              <textarea name="address" required rows="2"></textarea>
+            </div>
+            <div class="input-group">
+              <label>Preferred Location</label>
+              <input type="text" name="preferredLocation" />
+            </div>
+            <div class="input-group">
+              <label>Nationality</label>
+              <input type="text" name="nationality" value="Indian" />
+            </div>
+            <div class="input-group">
+              <label>Aadhar ID*</label>
+              <input type="text" name="aadharId" required placeholder="XXXX-XXXX-XXXX" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Details Section -->
+        <div class="form-section glass-panel">
+          <h3>Academic Background</h3>
+          <div class="form-grid">
+            <div class="input-group">
+              <label>College Name*</label>
+              <input type="text" name="college" required />
+            </div>
+            <div class="input-group">
+              <label>Degree*</label>
+              <input type="text" name="degree" required placeholder="e.g. B.Tech" />
+            </div>
+            <div class="input-group">
+              <label>Stream*</label>
+              <input type="text" name="stream" required placeholder="e.g. Computer Science" />
+            </div>
+            <div class="input-group">
+              <label>Current CGPA*</label>
+              <input type="number" step="0.01" name="cgpa" required placeholder="e.g. 8.5" />
+            </div>
+            <div class="input-group">
+              <label>12th Percentage*</label>
+              <input type="number" step="0.1" name="percentage12" required />
+            </div>
+            <div class="input-group">
+              <label>10th Percentage*</label>
+              <input type="number" step="0.1" name="percentage10" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience & Skills Section -->
+        <div class="form-section glass-panel">
+          <h3>Experience & Skills</h3>
+          <div class="form-grid full-width">
+            <div class="input-group full-width">
+              <label>Work Experience (if any)</label>
+              <textarea name="experience" rows="3" placeholder="Briefly describe your past roles..."></textarea>
+            </div>
+            <div class="input-group full-width">
+              <label>Skills (comma separated)*</label>
+              <input type="text" name="skills" required placeholder="e.g. JavaScript, React, Node.js, Python" />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group file-upload">
+              <label>Upload Resume (Simulated)</label>
+              <div class="file-drop-zone">
+                <span class="material-icons-round">cloud_upload</span>
+                <span>Choose file or drag here</span>
+                <input type="file" name="resumeFile" accept=".pdf,.doc,.docx" />
+              </div>
+            </div>
+            <div class="input-group file-upload">
+              <label>Upload Aadhar Card (Simulated)</label>
+              <div class="file-drop-zone">
+                <span class="material-icons-round">badge</span>
+                <span>Choose file or drag here</span>
+                <input type="file" name="aadharFile" accept="image/*,.pdf" />
               </div>
             </div>
           </div>
-          <button
-            class="btn btn-secondary"
-            style="display: flex; align-items: center; gap: 0.5rem"
-            onclick="app.downloadResume()"
-            id="btn-download-resume"
-            disabled
-          >
-            <span class="material-icons-round">picture_as_pdf</span> Download
-            Resume
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-large">
+            Save Profile
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="app.navigate('jobs-view')">
+            Skip for Now
           </button>
         </div>
+      </form>
+    </section>
 
-        <form id="profile-form" class="profile-form fade-in-up">
-          <!-- Personal Details Section -->
-          <div class="form-section glass-panel">
-            <h3>Personal Information</h3>
-            <div class="form-grid">
-              <div class="input-group">
-                <label>First Name*</label>
-                <input type="text" name="firstName" required />
-              </div>
-              <div class="input-group">
-                <label>Middle Name</label>
-                <input type="text" name="middleName" />
-              </div>
-              <div class="input-group">
-                <label>Last Name*</label>
-                <input type="text" name="lastName" required />
-              </div>
-              <div class="input-group">
-                <label>Gender</label>
-                <select name="gender">
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div class="input-group">
-                <label>Phone Number*</label>
-                <input type="tel" name="phone" required />
-              </div>
-              <div class="input-group">
-                <label>Date of Birth</label>
-                <input type="date" name="dob" />
-              </div>
-            </div>
+    <!-- View: Jobs Dashboard -->
+    <section id="jobs-view" class="view hidden">
+      <div class="jobs-header fade-in">
+        <h2>Discover Opportunities</h2>
+        <p>
+          Find your next role and apply instantly with your profile auto-fill.
+        </p>
 
-            <div class="form-grid">
-              <div class="input-group full-width">
-                <label>Address*</label>
-                <textarea name="address" required rows="2"></textarea>
-              </div>
-              <div class="input-group">
-                <label>Preferred Location</label>
-                <input type="text" name="preferredLocation" />
-              </div>
-              <div class="input-group">
-                <label>Nationality</label>
-                <input type="text" name="nationality" value="Indian" />
-              </div>
-              <div class="input-group">
-                <label>Aadhar ID*</label>
-                <input
-                  type="text"
-                  name="aadharId"
-                  required
-                  placeholder="XXXX-XXXX-XXXX"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Academic Details Section -->
-          <div class="form-section glass-panel">
-            <h3>Academic Background</h3>
-            <div class="form-grid">
-              <div class="input-group">
-                <label>College Name*</label>
-                <input type="text" name="college" required />
-              </div>
-              <div class="input-group">
-                <label>Degree*</label>
-                <input
-                  type="text"
-                  name="degree"
-                  required
-                  placeholder="e.g. B.Tech"
-                />
-              </div>
-              <div class="input-group">
-                <label>Stream*</label>
-                <input
-                  type="text"
-                  name="stream"
-                  required
-                  placeholder="e.g. Computer Science"
-                />
-              </div>
-              <div class="input-group">
-                <label>Current CGPA*</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="cgpa"
-                  required
-                  placeholder="e.g. 8.5"
-                />
-              </div>
-              <div class="input-group">
-                <label>12th Percentage*</label>
-                <input type="number" step="0.1" name="percentage12" required />
-              </div>
-              <div class="input-group">
-                <label>10th Percentage*</label>
-                <input type="number" step="0.1" name="percentage10" required />
-              </div>
-            </div>
-          </div>
-
-          <!-- Experience & Skills Section -->
-          <div class="form-section glass-panel">
-            <h3>Experience & Skills</h3>
-            <div class="form-grid full-width">
-              <div class="input-group full-width">
-                <label>Work Experience (if any)</label>
-                <textarea
-                  name="experience"
-                  rows="3"
-                  placeholder="Briefly describe your past roles..."
-                ></textarea>
-              </div>
-              <div class="input-group full-width">
-                <label>Skills (comma separated)*</label>
-                <input
-                  type="text"
-                  name="skills"
-                  required
-                  placeholder="e.g. JavaScript, React, Node.js, Python"
-                />
-              </div>
-            </div>
-
-            <div class="form-grid">
-              <div class="input-group file-upload">
-                <label>Upload Resume (Simulated)</label>
-                <div class="file-drop-zone">
-                  <span class="material-icons-round">cloud_upload</span>
-                  <span>Choose file or drag here</span>
-                  <input
-                    type="file"
-                    name="resumeFile"
-                    accept=".pdf,.doc,.docx"
-                  />
-                </div>
-              </div>
-              <div class="input-group file-upload">
-                <label>Upload Aadhar Card (Simulated)</label>
-                <div class="file-drop-zone">
-                  <span class="material-icons-round">badge</span>
-                  <span>Choose file or drag here</span>
-                  <input type="file" name="aadharFile" accept="image/*,.pdf" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-large">
-              Save Profile
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              onclick="app.navigate('jobs-view')"
-            >
-              Skip for Now
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- View: Jobs Dashboard -->
-      <section id="jobs-view" class="view hidden">
-        <div class="jobs-header fade-in">
-          <h2>Discover Opportunities</h2>
-          <p>
-            Find your next role and apply instantly with your profile auto-fill.
-          </p>
-
-          <div class="search-bar glass-panel">
-            <span class="material-icons-round">search</span>
-            <input
-              type="text"
-              placeholder="Search by role, skill, or location..."
-            />
-          </div>
+        <div class="search-bar glass-panel">
+          <span class="material-icons-round">search</span>
+          <input type="text" placeholder="Search by role, skill, or location..." />
         </div>
+      </div>
 
-        <div class="jobs-grid" id="jobs-container">
-          <!-- Populated by JS -->
-        </div>
-      </section>
+      <div class="jobs-grid" id="jobs-container">
+        <!-- Populated by JS -->
+      </div>
+    </section>
 
-      <!-- View: Job Detail -->
-      <section id="job-detail-view" class="view hidden">
-        <div
-          class="job-detail-container glass-panel fade-in-up"
-          id="job-detail-content"
-        >
-          <!-- Populated by JS -->
-        </div>
-      </section>
+    <!-- View: Job Detail -->
+    <section id="job-detail-view" class="view hidden">
+      <div class="job-detail-container glass-panel fade-in-up" id="job-detail-content">
+        <!-- Populated by JS -->
+      </div>
+    </section>
 
-      <!-- View: Application History -->
-      <section id="applications-view" class="view hidden">
-        <div class="applications-content">
-          <div
-            class="header-with-actions"
-            style="
+    <!-- View: Application History -->
+    <section id="applications-view" class="view hidden">
+      <div class="applications-content">
+        <div class="header-with-actions" style="
               display: flex;
               justify-content: space-between;
               align-items: center;
               margin-bottom: 2rem;
-            "
-          >
-            <h2>My <span class="text-gradient">Applications</span></h2>
-            <select
-              id="app-history-filter"
-              style="
+            ">
+          <h2>My <span class="text-gradient">Applications</span></h2>
+          <select id="app-history-filter" style="
                 padding: 0.5rem 1rem;
                 border-radius: 8px;
                 background: rgba(255, 255, 255, 0.05);
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 color: #fff;
-              "
-              onchange="app.renderApplicationHistory()"
-            >
-              <option value="All" style="color: #000">All Statuses</option>
-              <option value="Under Review" style="color: #000">
-                Under Review
-              </option>
-              <option value="Interviewing" style="color: #000">
-                Interviewing
-              </option>
-              <option value="Accepted" style="color: #000">Accepted</option>
-              <option value="Rejected" style="color: #000">Rejected</option>
-            </select>
-          </div>
-
-          <div id="applications-list" class="applications-container">
-            <!-- Application history cards injected here via JS -->
-          </div>
+              " onchange="app.renderApplicationHistory()">
+            <option value="All" style="color: #000">All Statuses</option>
+            <option value="Under Review" style="color: #000">
+              Under Review
+            </option>
+            <option value="Interviewing" style="color: #000">
+              Interviewing
+            </option>
+            <option value="Accepted" style="color: #000">Accepted</option>
+            <option value="Rejected" style="color: #000">Rejected</option>
+          </select>
         </div>
-      </section>
 
-      <!-- View: Admin Dashboard -->
-      <section id="admin-view" class="view hidden">
-        <div class="admin-content">
-          <div
-            class="header-with-actions"
-            style="
+        <div id="applications-list" class="applications-container">
+          <!-- Application history cards injected here via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Admin Dashboard -->
+    <section id="admin-view" class="view hidden">
+      <div class="admin-content">
+        <div class="header-with-actions" style="
               display: flex;
               justify-content: space-between;
               align-items: center;
               margin-bottom: 2rem;
-            "
-          >
-            <h2>Employer <span class="text-gradient">Dashboard</span></h2>
-          </div>
+            ">
+          <h2>Employer <span class="text-gradient">Dashboard</span></h2>
+        </div>
 
-          <div class="admin-panel glass-panel">
-            <h3>Review Applications</h3>
-            <div class="table-responsive">
-              <div id="admin-applications-list">
-                <!-- Admin table injected here via JS -->
-              </div>
+        <div class="admin-panel glass-panel">
+          <h3>Review Applications</h3>
+          <div class="table-responsive">
+            <div id="admin-applications-list">
+              <!-- Admin table injected here via JS -->
             </div>
           </div>
+        </div>
 
-          <!-- Job Management Admin Panels -->
-          <div
-            style="
+        <!-- Job Management Admin Panels -->
+        <div style="
               display: grid;
               grid-template-columns: 1fr 1fr;
               gap: 1.5rem;
               margin-top: 2rem;
-            "
-          >
-            <!-- Post New Job -->
-            <div class="admin-panel glass-panel">
-              <h3>Post New Job</h3>
-              <form
-                id="admin-job-form"
-                onsubmit="app.createJob(event)"
-                class="form-grid"
-                style="margin-top: 1rem"
-              >
-                <div class="input-group full-width">
-                  <input
-                    type="text"
-                    name="title"
-                    required
-                    placeholder="Job Title"
-                  />
-                </div>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    name="company"
-                    required
-                    placeholder="Company"
-                  />
-                </div>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    name="location"
-                    required
-                    placeholder="Location"
-                  />
-                </div>
-                <div class="input-group">
-                  <select name="type" required>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                  </select>
-                </div>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    name="salary"
-                    required
-                    placeholder="Salary Range"
-                  />
-                </div>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    name="logo"
-                    required
-                    placeholder="Logo Emoji (e.g. 💻)"
-                    value="💻"
-                  />
-                </div>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    name="skills"
-                    required
-                    placeholder="Skills (comma separated)"
-                  />
-                </div>
-                <div class="input-group full-width">
-                  <textarea
-                    name="description"
-                    required
-                    placeholder="Detailed Job Description"
-                    rows="3"
-                  ></textarea>
-                </div>
-                <div class="input-group full-width">
-                  <button type="submit" class="btn btn-primary">
-                    Publish Job Listing
-                  </button>
-                </div>
-              </form>
-            </div>
+            ">
+          <!-- Post New Job -->
+          <div class="admin-panel glass-panel">
+            <h3>Post New Job</h3>
+            <form id="admin-job-form" onsubmit="app.createJob(event)" class="form-grid" style="margin-top: 1rem">
+              <div class="input-group full-width">
+                <input type="text" name="title" required placeholder="Job Title" />
+              </div>
+              <div class="input-group">
+                <input type="text" name="company" required placeholder="Company" />
+              </div>
+              <div class="input-group">
+                <input type="text" name="location" required placeholder="Location" />
+              </div>
+              <div class="input-group">
+                <select name="type" required>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <input type="text" name="salary" required placeholder="Salary Range" />
+              </div>
+              <div class="input-group">
+                <input type="text" name="logo" required placeholder="Logo Emoji (e.g. 💻)" value="💻" />
+              </div>
+              <div class="input-group">
+                <input type="text" name="skills" required placeholder="Skills (comma separated)" />
+              </div>
+              <div class="input-group full-width">
+                <textarea name="description" required placeholder="Detailed Job Description" rows="3"></textarea>
+              </div>
+              <div class="input-group full-width">
+                <button type="submit" class="btn btn-primary">
+                  Publish Job Listing
+                </button>
+              </div>
+            </form>
+          </div>
 
-            <!-- Manage Active Jobs -->
-            <div class="admin-panel glass-panel">
-              <h3>Manage Active Jobs</h3>
-              <div class="table-responsive mt-1">
-                <div id="admin-jobs-list">
-                  <!-- Jobs table injected here via JS -->
-                </div>
+          <!-- Manage Active Jobs -->
+          <div class="admin-panel glass-panel">
+            <h3>Manage Active Jobs</h3>
+            <div class="table-responsive mt-1">
+              <div id="admin-jobs-list">
+                <!-- Jobs table injected here via JS -->
               </div>
             </div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+  </main>
 
-    <!-- Modal: Application Auto-fill Prompt -->
-    <div id="apply-modal" class="modal hidden">
-      <div class="modal-content glass-panel bounce-in">
-        <div class="modal-header">
-          <h3>Apply for <span id="modal-job-title"></span></h3>
-          <button class="close-btn" onclick="app.closeModal('apply-modal')">
-            <span class="material-icons-round">close</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="apply-options">
-            <div
-              class="apply-option-card glow-hover"
-              onclick="app.processApplication('auto')"
-            >
-              <span class="material-icons-round icon-large text-gradient"
-                >auto_awesome</span
-              >
-              <h4>Auto-Fill with Profile</h4>
-              <p>
-                We'll use your saved profile data to complete this application
-                instantly.
-              </p>
-              <span class="badge badge-success">Recommended</span>
-            </div>
+  <!-- Modal: Application Auto-fill Prompt -->
+  <div id="apply-modal" class="modal hidden">
+    <div class="modal-content glass-panel bounce-in">
+      <div class="modal-header">
+        <h3>Apply for <span id="modal-job-title"></span></h3>
+        <button class="close-btn" onclick="app.closeModal('apply-modal')">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="apply-options">
+          <div class="apply-option-card glow-hover" onclick="app.processApplication('auto')">
+            <span class="material-icons-round icon-large text-gradient">auto_awesome</span>
+            <h4>Auto-Fill with Profile</h4>
+            <p>
+              We'll use your saved profile data to complete this application
+              instantly.
+            </p>
+            <span class="badge badge-success">Recommended</span>
+          </div>
 
-            <div class="separator">OR</div>
+          <div class="separator">OR</div>
 
-            <div
-              class="apply-option-card"
-              onclick="app.processApplication('manual')"
-            >
-              <span class="material-icons-round icon-large">edit_document</span>
-              <h4>Fill Manually</h4>
-              <p>
-                Start a blank application form and enter your details manually.
-              </p>
-            </div>
+          <div class="apply-option-card" onclick="app.processApplication('manual')">
+            <span class="material-icons-round icon-large">edit_document</span>
+            <h4>Fill Manually</h4>
+            <p>
+              Start a blank application form and enter your details manually.
+            </p>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Modal: Success -->
-    <div id="success-modal" class="modal hidden">
-      <div class="modal-content glass-panel success-content bounce-in">
-        <div class="success-animation">
-          <span class="material-icons-round">check_circle</span>
-        </div>
-        <h2>Successfully Applied!</h2>
-        <p>Your application has been submitted successfully.</p>
-        <button class="btn btn-primary" onclick="app.closeSuccessModal()">
-          Browse More Jobs
-        </button>
+  <!-- Modal: Success -->
+  <div id="success-modal" class="modal hidden">
+    <div class="modal-content glass-panel success-content bounce-in">
+      <div class="success-animation">
+        <span class="material-icons-round">check_circle</span>
       </div>
+      <h2>Successfully Applied!</h2>
+      <p>Your application has been submitted successfully.</p>
+      <button class="btn btn-primary" onclick="app.closeSuccessModal()">
+        Browse More Jobs
+      </button>
     </div>
+  </div>
 
-    <footer>©️ 2026 ALL RIGHTS RESERVED BY VISHNU</footer>
+  <footer>©️ 2026 ALL RIGHTS RESERVED BY SNAKES</footer>
 
-    <script src="app.js"></script>
-  </body>
+  <script src="app.js"></script>
+</body>
+
 </html>
