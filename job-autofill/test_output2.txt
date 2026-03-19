@@ -1,0 +1,17 @@
+Testing Backend APIs natively...
+Register Company: {
+  message: 'User registered successfully',
+  user: { id: 3, email: 'comp1773929508731@example.com', role: 'company' }
+}
+Post Job: { message: 'Job created successfully', id: 'job-1773929508958' }
+Register User: {
+  message: 'User registered successfully',
+  user: { id: 4, email: 'user1773929508975@example.com', role: 'user' }
+}
+Submit App: { message: 'Application submitted successfully', applicationId: 2 }
+Company Apps: Found Apps
+Schedule Interview: {
+  message: 'Interview scheduled',
+  meeting_link: 'https://meet.jit.si/test'
+}
+User Apps Status: Interviewing Link: https://meet.jit.si/test

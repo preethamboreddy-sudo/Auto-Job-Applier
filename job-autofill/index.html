@@ -21,6 +21,9 @@
     <div class="nav-links" id="nav-links">
       <!-- Dynamically populated based on auth state -->
     </div>
+    <button id="theme-toggle" class="btn" onclick="app.toggleTheme()" style="margin-left: 1rem; background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); padding: 0;">
+      <span class="material-icons-round" id="theme-icon">light_mode</span>
+    </button>
   </nav>
 
   <!-- Main Container -->
@@ -145,6 +148,13 @@
             <label for="auth-password">Password</label>
             <input type="password" id="auth-password" required placeholder="••••••••" />
           </div>
+          <div class="input-group" id="auth-role-group">
+            <label for="auth-role">Account Type</label>
+            <select id="auth-role">
+              <option value="user">Candidate</option>
+              <option value="company">Company</option>
+            </select>
+          </div>
           <button type="submit" class="btn btn-primary btn-block">
             Sign Up
           </button>
@@ -201,6 +211,21 @@
       </div>
 
       <form id="profile-form" class="profile-form fade-in-up">
+        <!-- Smart Import Section -->
+        <div class="form-section glass-panel" style="background: rgba(88, 166, 255, 0.05); border-color: rgba(88, 166, 255, 0.2);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+            <div>
+              <h3 style="border-bottom: none; padding-bottom: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;"><span class="material-icons-round text-primary" style="font-size: 1.5rem;">auto_awesome</span> Smart Profile Import</h3>
+              <p style="color: var(--text-secondary); font-size: 0.95rem;">Upload your resume to instantly auto-fill the entire form below using Gemini AI.</p>
+            </div>
+          </div>
+          <div class="file-drop-zone" id="smart-import-zone" style="border-color: var(--primary-color);">
+            <span class="material-icons-round" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0.5rem;">description</span>
+            <span id="import-zone-text" style="font-weight: 500;">Click or drag your PDF Resume here</span>
+            <input type="file" id="resumeImportFile" accept=".pdf" onchange="app.importResume(this)" title="Upload PDF Resume">
+          </div>
+        </div>
+
         <!-- Personal Details Section -->
         <div class="form-section glass-panel">
           <h3>Personal Information</h3>
@@ -347,6 +372,18 @@
       </div>
 
       <div class="jobs-grid" id="jobs-container">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- View: Saved Jobs -->
+    <section id="saved-jobs-view" class="view hidden">
+      <div class="jobs-header fade-in">
+        <h2><span class="material-icons-round" style="vertical-align: middle; color: var(--primary-color);">bookmark</span> Saved Jobs</h2>
+        <p>Review the roles you've bookmarked for later.</p>
+      </div>
+
+      <div class="jobs-grid" id="saved-jobs-container">
         <!-- Populated by JS -->
       </div>
     </section>
@@ -523,6 +560,42 @@
       </button>
     </div>
   </div>
+
+  <!-- Modal: Cover Letter -->
+  <div id="cover-letter-modal" class="modal hidden">
+    <div class="modal-content glass-panel bounce-in" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3><span class="text-gradient">AI Generated</span> Cover Letter</h3>
+        <button class="close-btn" onclick="app.closeModal('cover-letter-modal')">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea id="cover-letter-text" rows="15" style="width: 100%; padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); font-family: inherit; font-size: 1rem; line-height: 1.6; resize: vertical; margin-bottom: 1rem;"></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+          <button class="btn btn-secondary" onclick="app.copyCoverLetter()"><span class="material-icons-round" style="margin-right: 0.5rem; font-size: 1.2rem;">content_copy</span> Copy to Clipboard</button>
+          <button class="btn btn-primary" onclick="app.closeModal('cover-letter-modal')">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal" class="modal hidden">
+      <div class="modal-content glass-panel fade-in-up" style="max-width: 500px; display: flex; flex-direction: column; height: 65vh; padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+          <h3 style="margin: 0;">Messages</h3>
+          <span class="material-icons-round" style="cursor: pointer; color: var(--text-secondary);" onclick="app.closeModal('chat-modal')">close</span>
+        </div>
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; padding: 0.5rem; margin-bottom: 1rem;">
+          <!-- Messages js injected -->
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; border-radius: 8px; outline: none;" onkeypress="if(event.key === 'Enter') app.sendMessage()">
+          <button class="btn btn-primary" onclick="app.sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
 
   <footer>©️ 2026 ALL RIGHTS RESERVED BY SNAKES</footer>
 

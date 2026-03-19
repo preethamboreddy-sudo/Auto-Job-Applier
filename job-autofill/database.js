@@ -64,6 +64,7 @@ function initializeDatabase() {
       `CREATE TABLE IF NOT EXISTS jobs (
             id TEXT PRIMARY KEY,
             title TEXT NOT NULL,
+            company_id INTEGER,
             company TEXT NOT NULL,
             location TEXT NOT NULL,
             type TEXT NOT NULL,
@@ -71,7 +72,8 @@ function initializeDatabase() {
             logo TEXT NOT NULL,
             description TEXT NOT NULL,
             skills TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (company_id) REFERENCES users(id)
         )`,
       (err) => {
         if (err) console.error('Error creating jobs table:', err.message);
@@ -86,6 +88,11 @@ function initializeDatabase() {
             user_id INTEGER NOT NULL,
             job_id TEXT NOT NULL,
             status TEXT DEFAULT 'Under Review',
+            meeting_link TEXT,
+            match_score INTEGER,
+            match_reason TEXT,
+            available_slots TEXT,
+            selected_slot TEXT,
             applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id),
             FOREIGN KEY (job_id) REFERENCES jobs(id)
@@ -93,6 +100,37 @@ function initializeDatabase() {
       (err) => {
         if (err)
           console.error('Error creating applications table:', err.message);
+      }
+    );
+
+    // Messages table
+    db.run(
+      `CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            application_id INTEGER NOT NULL,
+            sender_id INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (application_id) REFERENCES applications(id),
+            FOREIGN KEY (sender_id) REFERENCES users(id)
+        )`,
+      (err) => {
+        if (err) console.error('Error creating messages table:', err.message);
+      }
+    );
+
+    // Saved Jobs table
+    db.run(
+      `CREATE TABLE IF NOT EXISTS saved_jobs (
+            user_id INTEGER NOT NULL,
+            job_id TEXT NOT NULL,
+            saved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user_id, job_id),
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (job_id) REFERENCES jobs(id)
+        )`,
+      (err) => {
+        if (err) console.error('Error creating saved_jobs table:', err.message);
       }
     );
 
@@ -108,6 +146,7 @@ function seedJobs() {
       [
         'job-1',
         'Senior Frontend Engineer',
+        1,
         'TechNova',
         'Remote',
         'Full-time',
@@ -119,6 +158,7 @@ function seedJobs() {
       [
         'job-2',
         'Backend Developer',
+        1,
         'DataFlow Systems',
         'Bangalore, India',
         'Full-time',
@@ -130,6 +170,7 @@ function seedJobs() {
       [
         'job-3',
         'UX/UI Designer',
+        1,
         'Creative Studio',
         'Mumbai, India',
         'Contract',
@@ -141,7 +182,7 @@ function seedJobs() {
     ];
 
     const stmt = db.prepare(
-      `INSERT INTO jobs (id, title, company, location, type, salary, logo, description, skills) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO jobs (id, title, company_id, company, location, type, salary, logo, description, skills) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     );
     mockJobs.forEach((job) => stmt.run(job));
     stmt.finalize();
