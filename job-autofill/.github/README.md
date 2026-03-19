@@ -76,6 +76,7 @@ You can run the application seamlessly using Docker without local Node environme
 ```bash
 docker compose up --build
 ```
+
 The application will be accessible at `http://localhost:3000`.
 
 ## 🤝 Contributing
@@ -85,6 +86,7 @@ Contributions are what make the open source community such an amazing place to l
 Please review our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting Pull Requests.
 
 ---
+
 <div align="center">
   <p>Built with ❤️ by Preetham Reddy</p>
 </div>

@@ -196,9 +196,68 @@
 
       <!-- View: User Profile Form -->
       <section id="profile-view" class="view hidden">
-        <div class="profile-header fade-in">
-          <h2>Complete Your Profile</h2>
-          <p>Fill out your details once, apply anywhere instantly.</p>
+        <div
+          class="profile-header fade-in"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+          "
+        >
+          <div style="flex: 1; padding-right: 2rem">
+            <h2>Complete Your Profile</h2>
+            <p>Fill out your details once, apply anywhere instantly.</p>
+            <div class="progress-container mt-1">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  margin-bottom: 0.5rem;
+                  font-size: 0.85rem;
+                "
+              >
+                <span style="color: var(--text-secondary)"
+                  >Profile Completion</span
+                >
+                <span
+                  id="profile-progress-text"
+                  class="text-gradient"
+                  style="font-weight: 600"
+                  >0%</span
+                >
+              </div>
+              <div
+                class="progress-bar-bg"
+                style="
+                  height: 8px;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 4px;
+                  overflow: hidden;
+                "
+              >
+                <div
+                  id="profile-progress-fill"
+                  style="
+                    height: 100%;
+                    width: 0%;
+                    background: linear-gradient(90deg, #58a6ff, #bc8cff);
+                    border-radius: 4px;
+                    transition: width 0.4s ease;
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+          <button
+            class="btn btn-secondary"
+            style="display: flex; align-items: center; gap: 0.5rem"
+            onclick="app.downloadResume()"
+            id="btn-download-resume"
+            disabled
+          >
+            <span class="material-icons-round">picture_as_pdf</span> Download
+            Resume
+          </button>
         </div>
 
         <form id="profile-form" class="profile-form fade-in-up">
@@ -416,6 +475,27 @@
             "
           >
             <h2>My <span class="text-gradient">Applications</span></h2>
+            <select
+              id="app-history-filter"
+              style="
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #fff;
+              "
+              onchange="app.renderApplicationHistory()"
+            >
+              <option value="All" style="color: #000">All Statuses</option>
+              <option value="Under Review" style="color: #000">
+                Under Review
+              </option>
+              <option value="Interviewing" style="color: #000">
+                Interviewing
+              </option>
+              <option value="Accepted" style="color: #000">Accepted</option>
+              <option value="Rejected" style="color: #000">Rejected</option>
+            </select>
           </div>
 
           <div id="applications-list" class="applications-container">
@@ -444,6 +524,107 @@
             <div class="table-responsive">
               <div id="admin-applications-list">
                 <!-- Admin table injected here via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Job Management Admin Panels -->
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 1.5rem;
+              margin-top: 2rem;
+            "
+          >
+            <!-- Post New Job -->
+            <div class="admin-panel glass-panel">
+              <h3>Post New Job</h3>
+              <form
+                id="admin-job-form"
+                onsubmit="app.createJob(event)"
+                class="form-grid"
+                style="margin-top: 1rem"
+              >
+                <div class="input-group full-width">
+                  <input
+                    type="text"
+                    name="title"
+                    required
+                    placeholder="Job Title"
+                  />
+                </div>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="company"
+                    required
+                    placeholder="Company"
+                  />
+                </div>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="location"
+                    required
+                    placeholder="Location"
+                  />
+                </div>
+                <div class="input-group">
+                  <select name="type" required>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="salary"
+                    required
+                    placeholder="Salary Range"
+                  />
+                </div>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="logo"
+                    required
+                    placeholder="Logo Emoji (e.g. 💻)"
+                    value="💻"
+                  />
+                </div>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    name="skills"
+                    required
+                    placeholder="Skills (comma separated)"
+                  />
+                </div>
+                <div class="input-group full-width">
+                  <textarea
+                    name="description"
+                    required
+                    placeholder="Detailed Job Description"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="input-group full-width">
+                  <button type="submit" class="btn btn-primary">
+                    Publish Job Listing
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Manage Active Jobs -->
+            <div class="admin-panel glass-panel">
+              <h3>Manage Active Jobs</h3>
+              <div class="table-responsive mt-1">
+                <div id="admin-jobs-list">
+                  <!-- Jobs table injected here via JS -->
+                </div>
               </div>
             </div>
           </div>

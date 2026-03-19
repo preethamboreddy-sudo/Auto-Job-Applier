@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./database');
+const PDFDocument = require('pdfkit');
 
 const app = express();
 const PORT = 3001; // Backend runs on 3001, frontend on 3000
@@ -121,6 +122,65 @@ app.post('/api/profile/:userId', (req, res) => {
   });
 });
 
+// 4b. Profile: Download PDF Resume
+app.get('/api/profile/:userId/resume', (req, res) => {
+  const { userId } = req.params;
+  db.get(`SELECT * FROM profiles WHERE user_id = ?`, [userId], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Profile not found' });
+
+    db.get(`SELECT email FROM users WHERE id = ?`, [userId], (err, userRow) => {
+      if (err || !userRow)
+        return res.status(500).json({ error: 'User not found' });
+
+      const doc = new PDFDocument({ margin: 50 });
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=Resume_${row.firstName}_${row.lastName}.pdf`
+      );
+      doc.pipe(res);
+
+      // Header
+      doc
+        .fontSize(24)
+        .text(`${row.firstName || ''} ${row.lastName || ''}`, {
+          align: 'center',
+        });
+      doc
+        .fontSize(12)
+        .fillColor('gray')
+        .text(`${userRow.email} | ${row.phone || ''} | ${row.address || ''}`, {
+          align: 'center',
+        });
+      doc.moveDown();
+
+      // Education
+      doc
+        .fillColor('black')
+        .fontSize(16)
+        .text('Education', { underline: true });
+      doc.fontSize(12).text(`${row.degree || 'N/A'} in ${row.stream || 'N/A'}`);
+      doc.text(`${row.college || 'N/A'}`);
+      doc.text(
+        `CGPA: ${row.cgpa || 'N/A'} | 12th: ${row.percentage12 || 'N/A'}% | 10th: ${row.percentage10 || 'N/A'}%`
+      );
+      doc.moveDown();
+
+      // Skills
+      doc.fontSize(16).text('Skills', { underline: true });
+      doc.fontSize(12).text(row.skills || 'N/A');
+      doc.moveDown();
+
+      // Experience
+      doc.fontSize(16).text('Experience', { underline: true });
+      doc.fontSize(12).text(row.experience || 'No prior experience listed');
+
+      doc.end();
+    });
+  });
+});
+
 // 5. Jobs: Get DB Jobs
 app.get('/api/jobs', (req, res) => {
   db.all(`SELECT * FROM jobs ORDER BY created_at DESC`, [], (err, rows) => {
@@ -162,6 +222,15 @@ app.post('/api/jobs', (req, res) => {
   });
 });
 
+// 5c. Jobs: Delete (Admin Only)
+app.delete('/api/jobs/:jobId', (req, res) => {
+  const { jobId } = req.params;
+  db.run(`DELETE FROM jobs WHERE id = ?`, [jobId], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Job deleted successfully' });
+  });
+});
+
 // 6. Applications: Submit
 app.post('/api/applications', (req, res) => {
   const { userId, jobId } = req.body;
@@ -175,12 +244,10 @@ app.post('/api/applications', (req, res) => {
     [userId, jobId],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
-      res
-        .status(201)
-        .json({
-          message: 'Application submitted successfully',
-          applicationId: this.lastID,
-        });
+      res.status(201).json({
+        message: 'Application submitted successfully',
+        applicationId: this.lastID,
+      });
     }
   );
 });

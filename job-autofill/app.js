@@ -111,6 +111,7 @@ const app = {
       this.wrapMainContainer(true);
     } else if (viewId === 'admin-view') {
       this.renderAdminDashboard();
+      this.renderAdminJobs();
       this.wrapMainContainer(true);
     }
   },
@@ -246,6 +247,10 @@ const app = {
     // Profile form submission
     const profileForm = document.getElementById('profile-form');
     if (profileForm) {
+      profileForm.addEventListener('input', () => {
+        this.calculateProfileProgress();
+      });
+
       profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!this.state.currentUser) return;
@@ -296,6 +301,54 @@ const app = {
         input.value = value;
       }
     }
+
+    // Enable download resume button if profile has data
+    const downloadBtn = document.getElementById('btn-download-resume');
+    if (downloadBtn) {
+      downloadBtn.disabled = !this.state.profile.firstName; // Check a required field
+    }
+
+    this.calculateProfileProgress();
+  },
+
+  calculateProfileProgress() {
+    const form = document.getElementById('profile-form');
+    if (!form) return;
+
+    const inputs = form.querySelectorAll(
+      'input:not([type="file"]), select, textarea'
+    );
+    let total = inputs.length + 2; // +2 for resume and aadhar
+    let filled = 0;
+
+    inputs.forEach((input) => {
+      if (input.value.trim() !== '') filled++;
+    });
+
+    const hasResume =
+      form.querySelector('[name="resumeFile"]').value ||
+      (this.state.profile && this.state.profile.hasResume);
+    const hasAadhar =
+      form.querySelector('[name="aadharFile"]').value ||
+      (this.state.profile && this.state.profile.hasAadhar);
+
+    if (hasResume) filled++;
+    if (hasAadhar) filled++;
+
+    const percentage = Math.round((filled / total) * 100) || 0;
+
+    const fillEl = document.getElementById('profile-progress-fill');
+    const textEl = document.getElementById('profile-progress-text');
+
+    if (fillEl) fillEl.style.width = `${percentage}%`;
+    if (textEl) textEl.innerText = `${percentage}%`;
+
+    const downloadBtn = document.getElementById('btn-download-resume');
+    if (downloadBtn && form.querySelector('[name="firstName"]')) {
+      downloadBtn.disabled =
+        !this.state.profile.firstName &&
+        !form.querySelector('[name="firstName"]').value;
+    }
   },
 
   logout() {
@@ -303,6 +356,14 @@ const app = {
     this.state.profile = {};
     this.saveLocalSession();
     this.navigate('landing-view');
+  },
+
+  downloadResume() {
+    if (!this.state.currentUser) return;
+    window.open(
+      `${this.API_URL}/profile/${this.state.currentUser.id}/resume`,
+      '_blank'
+    );
   },
 
   // To be implemented: Jobs rendering and Application processing
@@ -563,7 +624,14 @@ const app = {
       if (!res.ok) throw new Error('Failed to load applications');
 
       const data = await res.json();
-      const apps = data.applications;
+      let apps = data.applications;
+
+      const filterSelect = document.getElementById('app-history-filter');
+      const filterValue = filterSelect ? filterSelect.value : 'All';
+
+      if (filterValue !== 'All') {
+        apps = apps.filter((app) => app.status === filterValue);
+      }
 
       if (apps.length === 0) {
         container.innerHTML = `
@@ -698,6 +766,63 @@ const app = {
     } catch (error) {
       alert(error.message);
     }
+  },
+
+  async createJob(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const jobData = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch(`${this.API_URL}/jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jobData),
+      });
+      if (!res.ok) throw new Error('Failed to create job');
+      form.reset();
+      await this.fetchJobs();
+      this.renderAdminJobs();
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
+  async deleteJob(jobId) {
+    if (!confirm('Are you strictly sure you want to delete this job posting?'))
+      return;
+    try {
+      const res = await fetch(`${this.API_URL}/jobs/${jobId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete job');
+      await this.fetchJobs();
+      this.renderAdminJobs();
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
+  renderAdminJobs() {
+    const container = document.getElementById('admin-jobs-list');
+    if (!container) return;
+
+    if (this.mockJobs.length === 0) {
+      container.innerHTML = '<p class="text-center">No active jobs.</p>';
+      return;
+    }
+
+    let html = `<table class="admin-table"><thead><tr><th>Job</th><th>Type</th><th>Actions</th></tr></thead><tbody>`;
+    this.mockJobs.forEach((job) => {
+      html += `<tr>
+        <td><strong>${job.title}</strong><br><small>${job.company}</small></td>
+        <td>${job.type}</td>
+        <td><button class="btn btn-secondary btn-small" onclick="app.deleteJob('${job.id}')" style="color: #ff7b72; border-color: rgba(255,123,114,0.3);">Remove</button></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
   },
 };
 
