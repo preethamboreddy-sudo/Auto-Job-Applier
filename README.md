@@ -91,6 +91,7 @@ Let the system handle applications automatically
 
 <img width="1919" height="974" alt="image" src="https://github.com/user-attachments/assets/96cb2ede-9a78-4be4-a9b1-ce28cdd868f7" />
 <img width="1918" height="967" alt="image" src="https://github.com/user-attachments/assets/ed4637da-2740-4eb1-94ec-798450e75339" />
+<img width="664" height="823" alt="image" src="https://github.com/user-attachments/assets/dc1a979c-e31a-4590-b6f1-00ef7796069c" />
 <img width="1916" height="968" alt="image" src="https://github.com/user-attachments/assets/ad327af2-83c0-4f22-a2ca-a3ff27ba0ee4" />
 <img width="1919" height="975" alt="image" src="https://github.com/user-attachments/assets/60144e2a-d215-4d73-b1d1-cc47345dacf0" />
 <img width="1919" height="978" alt="image" src="https://github.com/user-attachments/assets/d9473b63-ea19-4aee-9ae1-711de6de0b18" />
