@@ -1236,3 +1236,41 @@ footer {
 .match-score-badge:hover {
   background: rgba(88, 166, 255, 0.2);
 }
+
+/* Google Translate Custom Styling */
+/* Hide the top banner frame */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important; 
+}
+/* Style the dropdown */
+.goog-te-select {
+  background-color: var(--glass-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+.goog-te-combo {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-radius: 4px;
+  padding: 4px;
+  border: 1px solid var(--border-color) !important;
+  font-family: inherit;
+}
+/* Hide the Google logo and default text */
+.goog-logo-link {
+  display: none !important;
+}
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0;
+}
