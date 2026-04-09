@@ -145,6 +145,7 @@ function initializeDatabase() {
         )`,
       (err) => {
         if (err) console.error('Error creating posts table:', err.message);
+        else seedPosts();
       }
     );
 
@@ -202,6 +203,24 @@ function seedJobs() {
     stmt.finalize();
 
     console.log('Seeded initial jobs data.');
+  });
+}
+
+function seedPosts() {
+  db.get(`SELECT count(*) as count FROM posts`, (err, row) => {
+    if (err || row.count > 0) return; // Prevent duplicate seeding
+
+    const mockPosts = [
+      [1, "We are thrilled to announce that TechNova is officially hiring remote engineers! Check out our new postings on the job dashboard. #hiring #remote"],
+      [1, "Does anyone have tips on how to stand out in a PM interview? 🧠🤔"],
+      [1, "Just submitted my application for the Backend Developer role via the auto-fill! It literally took 5 seconds. BURA Jobs is a lifesaver. 🔥🔥"]
+    ];
+
+    const stmt = db.prepare(`INSERT INTO posts (user_id, content) VALUES (?, ?)`);
+    mockPosts.forEach((post) => stmt.run(post));
+    stmt.finalize();
+
+    console.log('Seeded initial community posts data.');
   });
 }
 
