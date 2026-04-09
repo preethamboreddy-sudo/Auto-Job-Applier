@@ -1262,17 +1262,16 @@ const app = {
             `<span class="badge badge-success" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem; background: rgba(88, 166, 255, 0.1); color: var(--primary-color); border: 1px solid rgba(88,166,255,0.3);"><span class="material-icons-round" style="font-size: 0.8rem; vertical-align: middle;">verified</span> Employer</span>` : 
             `<span class="badge" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border-color);">Candidate</span>`;
 
+        const postClassName = post.role === 'company' ? 'community-post-company' : 'community-post-candidate';
         return `
-          <div class="glass-panel glow-hover" style="padding: 1.5rem;">
+          <div class="community-post-card ${postClassName}">
+            <div class="community-avatar-wrapper">
+              <span class="material-icons-round">${post.role === 'company' ? 'business' : 'person'}</span>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-              <div style="display: flex; align-items: center;">
-                <div class="job-logo" style="width: 40px; height: 40px; font-size: 1.5rem; border-radius: 50%; display: flex; align-items:center; justify-content:center; background: var(--gradient-primary); color: white;">
-                  <span class="material-icons-round">${post.role === 'company' ? 'business' : 'person'}</span>
-                </div>
-                <div style="margin-left: 1rem;">
-                  <div style="font-weight: 600; display: flex; align-items: center;">${name} ${roleBadge}</div>
-                  <div style="font-size: 0.8rem; color: var(--text-secondary);">${date}</div>
-                </div>
+              <div>
+                <div style="font-weight: 600; display: flex; align-items: center;">${name} ${roleBadge}</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">${date}</div>
               </div>
             </div>
             <div style="line-height: 1.6;">${post.content.replace(/\\n/g, '<br>')}</div>
