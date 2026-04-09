@@ -4,11 +4,11 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 RUN npm install
 
 # Bundle app source
-COPY . .
+COPY --chown=node:node . .
 
 # Ensure standard permissions
 USER node
