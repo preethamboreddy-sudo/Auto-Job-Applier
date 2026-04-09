@@ -143,6 +143,9 @@ const app = {
       this.renderAdminDashboard();
       this.renderAdminJobs();
       this.wrapMainContainer(true);
+    } else if (viewId === 'community-view') {
+      this.renderCommunityFeed();
+      this.wrapMainContainer(true);
     }
   },
 
@@ -189,6 +192,7 @@ const app = {
                 <a class="nav-item ${this.state.currentView === 'profile-view' ? 'active' : ''}" onclick="app.navigate('profile-view')">Profile</a>
                 <a class="nav-item ${this.state.currentView === 'applications-view' ? 'active' : ''}" onclick="app.navigate('applications-view')">My Applications</a>
                 ` : ''}
+                <a class="nav-item ${this.state.currentView === 'community-view' ? 'active' : ''}" onclick="app.navigate('community-view')">Community</a>
                 <span class="nav-item" onclick="app.logout()">
                     <span class="material-icons-round" style="vertical-align: middle; font-size: 1.2rem;">logout</span>
                 </span>
@@ -1235,6 +1239,73 @@ const app = {
   removeAITypingIndicator() {
     const indicator = document.getElementById('ai-typing-indicator');
     if (indicator) indicator.remove();
+  },
+
+  // --- Community Feed Logic ---
+  async renderCommunityFeed() {
+    const container = document.getElementById('community-feed-list');
+    container.innerHTML = '<div style="text-align:center;"><span class="material-icons-round" style="animation: spin 1s linear infinite;">autorenew</span></div>';
+    
+    try {
+      const res = await fetch(`${this.API_URL}/posts`);
+      const data = await res.json();
+      
+      if (!data.posts || data.posts.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No updates yet. Be the first to share your thoughts!</p>';
+        return;
+      }
+
+      container.innerHTML = data.posts.map(post => {
+        const date = new Date(post.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+        const name = post.role === 'company' ? (post.company || 'Company Admin') : `${post.firstName || ''} ${post.lastName || ''}`.trim() || post.email;
+        const roleBadge = post.role === 'company' ? 
+            `<span class="badge badge-success" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem; background: rgba(88, 166, 255, 0.1); color: var(--primary-color); border: 1px solid rgba(88,166,255,0.3);"><span class="material-icons-round" style="font-size: 0.8rem; vertical-align: middle;">verified</span> Employer</span>` : 
+            `<span class="badge" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid var(--border-color);">Candidate</span>`;
+
+        return `
+          <div class="glass-panel glow-hover" style="padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center;">
+                <div class="job-logo" style="width: 40px; height: 40px; font-size: 1.5rem; border-radius: 50%; display: flex; align-items:center; justify-content:center; background: var(--gradient-primary); color: white;">
+                  <span class="material-icons-round">${post.role === 'company' ? 'business' : 'person'}</span>
+                </div>
+                <div style="margin-left: 1rem;">
+                  <div style="font-weight: 600; display: flex; align-items: center;">${name} ${roleBadge}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-secondary);">${date}</div>
+                </div>
+              </div>
+            </div>
+            <div style="line-height: 1.6;">${post.content.replace(/\\n/g, '<br>')}</div>
+          </div>
+        `;
+      }).join('');
+    } catch(err) {
+      console.error('Failed to load feed:', err);
+      container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Error loading community feed.</p>';
+    }
+  },
+
+  async submitPost() {
+    if (!this.state.currentUser) return alert('You must be logged in to post.');
+    
+    const input = document.getElementById('post-composer-text');
+    const content = input.value.trim();
+    if (!content) return;
+
+    try {
+      const res = await fetch(`${this.API_URL}/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: this.state.currentUser.id, content })
+      });
+
+      if (!res.ok) throw new Error('Failed to post');
+      
+      input.value = '';
+      this.renderCommunityFeed();
+    } catch(err) {
+      alert('Error posting update: ' + err.message);
+    }
   }
 };
 

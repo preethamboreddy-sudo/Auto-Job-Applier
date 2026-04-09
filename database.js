@@ -134,6 +134,20 @@ function initializeDatabase() {
       }
     );
 
+    // Posts table (Community Feed)
+    db.run(
+      `CREATE TABLE IF NOT EXISTS posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            content TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )`,
+      (err) => {
+        if (err) console.error('Error creating posts table:', err.message);
+      }
+    );
+
     console.log('Database tables initialized.');
   });
 }

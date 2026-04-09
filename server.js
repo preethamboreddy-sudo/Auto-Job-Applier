@@ -600,6 +600,44 @@ app.post('/api/ai-chat', async (req, res) => {
   }
 });
 
+// 18. Community Feed
+app.get('/api/posts', (req, res) => {
+  const query = `
+    SELECT p.id, p.content, p.created_at, u.role, u.email,
+           pr.firstName, pr.lastName, j.company
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    LEFT JOIN profiles pr ON u.id = pr.user_id
+    LEFT JOIN jobs j ON u.id = j.company_id
+    GROUP BY p.id
+    ORDER BY p.created_at DESC
+  `;
+  
+  db.all(query, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    // In our simplified schema, multiple jobs might have the same company_id. 
+    // To avoid duplication or just to grab the company name, we left join `jobs`.
+    // Actually, distinct mapping is better, but since it's just a name string:
+    res.json({ posts: rows });
+  });
+});
+
+app.post('/api/posts', (req, res) => {
+  const { user_id, content } = req.body;
+  if (!user_id || !content) {
+    return res.status(400).json({ error: 'User ID and content are required' });
+  }
+
+  db.run(
+    `INSERT INTO posts (user_id, content) VALUES (?, ?)`,
+    [user_id, content],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ message: 'Post created', id: this.lastID });
+    }
+  );
+});
+
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend server running on port ${PORT}`);

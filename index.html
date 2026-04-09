@@ -510,6 +510,28 @@
         </div>
       </div>
     </section>
+    <!-- View: Community Feed -->
+    <section id="community-view" class="view hidden">
+      <div class="community-content" style="max-width: 800px; margin: 0 auto;">
+        <div class="header-with-actions" style="margin-bottom: 2rem;">
+          <h2>Professional <span class="text-gradient">Community</span></h2>
+          <p style="color: var(--text-secondary);">Share updates, thoughts, and network with companies and candidates.</p>
+        </div>
+
+        <!-- Composer -->
+        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+          <textarea id="post-composer-text" rows="3" placeholder="Share an update, open role, or thought..." style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; font-family: inherit; resize: vertical; outline: none; margin-bottom: 1rem; font-size: 1rem;"></textarea>
+          <div style="display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary" onclick="app.submitPost()" style="display: flex; align-items: center; gap: 0.5rem;"><span class="material-icons-round">send</span> Post</button>
+          </div>
+        </div>
+
+        <!-- Feed List -->
+        <div id="community-feed-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Posts injected by JS -->
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Modal: Application Auto-fill Prompt -->
