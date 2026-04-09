@@ -70,14 +70,14 @@
           </div>
         </div>
         <div class="hero-visual glass-panel">
-          <img src="hero.jpg" alt="Futuristic Job Dashboard" class="img-fluid floating-img" />
+          <img src="https://uppcsmagazine.com/wp-content/uploads/2025/08/Gemini_Generated_Image_afiqfyafiqfyafiq-1.png" alt="Futuristic Job Dashboard" class="img-fluid floating-img" />
         </div>
       </div>
 
       <!-- About Section -->
       <div id="about-section" class="about-section fade-in">
         <div class="about-visual glass-panel">
-          <img src="villan.jpg" alt="Auto-fill Profile Concept" class="img-fluid floating-img-delayed" />
+          <img src="https://img.freepik.com/free-photo/ai-robot-frame-technology-abstract-futuristic-tech-design-with-blank-space_53876-129790.jpg" alt="Auto-fill Profile Concept" class="img-fluid floating-img-delayed" />
         </div>
         <div class="about-content">
           <h2>
@@ -412,15 +412,15 @@
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 color: #fff;
               " onchange="app.renderApplicationHistory()">
-            <option value="All" style="color: #000">All Statuses</option>
-            <option value="Under Review" style="color: #000">
+            <option value="All">All Statuses</option>
+            <option value="Under Review">
               Under Review
             </option>
-            <option value="Interviewing" style="color: #000">
+            <option value="Interviewing">
               Interviewing
             </option>
-            <option value="Accepted" style="color: #000">Accepted</option>
-            <option value="Rejected" style="color: #000">Rejected</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Rejected">Rejected</option>
           </select>
         </div>
 
@@ -596,6 +596,32 @@
         </div>
       </div>
     </div>
+
+    <!-- AI Chatbot Modal -->
+    <div id="ai-chat-modal" class="hidden" style="position: fixed; bottom: 100px; right: 30px; width: 350px; max-height: 500px; height: 60vh; z-index: 1000; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: all 0.3s ease-in-out;">
+      <div style="background: var(--gradient-primary); padding: 1rem; display: flex; justify-content: space-between; align-items: center; color: white;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="material-icons-round">smart_toy</span>
+          <h3 style="margin: 0; font-size: 1.1rem;">BURA Assistant</h3>
+        </div>
+        <button onclick="app.toggleAIChat()" style="color: white; background: transparent; border: none; cursor: pointer; display: flex;">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <div id="ai-chat-messages" style="flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; background: rgba(0,0,0,0.2);">
+      </div>
+      <div style="padding: 1rem; background: var(--bg-color); border-top: 1px solid var(--glass-border); display: flex; gap: 0.5rem; align-items: center;">
+        <input type="text" id="ai-chat-input" placeholder="Ask me anything..." style="flex: 1; padding: 0.6rem 1rem; border-radius: 20px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-primary); outline: none; font-family: inherit;" onkeypress="if(event.key === 'Enter') app.sendAIChat()">
+        <button class="btn btn-primary" onclick="app.sendAIChat()" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; min-width: 36px;">
+          <span class="material-icons-round" style="font-size: 18px;">send</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Floating Action Button for AI Chat -->
+    <button id="floating-chat-btn" class="btn btn-primary" onclick="app.toggleAIChat()" style="position: fixed; bottom: 30px; right: 30px; border-radius: 50%; width: 60px; height: 60px; z-index: 1000; box-shadow: 0 4px 15px rgba(88, 166, 255, 0.4); display: flex; justify-content: center; align-items: center; padding: 0;" title="Talk to AI Assistant">
+      <span class="material-icons-round" style="font-size: 28px;">auto_awesome</span>
+    </button>
 
   <footer>©️ 2026 ALL RIGHTS RESERVED BY SNAKES</footer>
 

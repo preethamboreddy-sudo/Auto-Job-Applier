@@ -19,6 +19,7 @@ const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GE
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // Routes
 // 1. Auth: Register
@@ -143,7 +144,8 @@ app.get('/api/profile/:userId/resume', (req, res) => {
       if (err || !userRow)
         return res.status(500).json({ error: 'User not found' });
 
-      const doc = new PDFDocument({ margin: 50 });
+      // Use an A4 layout simulating the provided Canva design
+      const doc = new PDFDocument({ size: 'A4', margin: 0 });
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader(
         'Content-Disposition',
@@ -151,40 +153,78 @@ app.get('/api/profile/:userId/resume', (req, res) => {
       );
       doc.pipe(res);
 
-      // Header
-      doc
-        .fontSize(24)
-        .text(`${row.firstName || ''} ${row.lastName || ''}`, {
-          align: 'center',
-        });
-      doc
-        .fontSize(12)
-        .fillColor('gray')
-        .text(`${userRow.email} | ${row.phone || ''} | ${row.address || ''}`, {
-          align: 'center',
-        });
-      doc.moveDown();
+      const leftX = 50, leftW = 150, rightX = 250, rightW = 295, lineX = 225;
 
-      // Education
-      doc
-        .fillColor('black')
-        .fontSize(16)
-        .text('Education', { underline: true });
-      doc.fontSize(12).text(`${row.degree || 'N/A'} in ${row.stream || 'N/A'}`);
-      doc.text(`${row.college || 'N/A'}`);
-      doc.text(
-        `CGPA: ${row.cgpa || 'N/A'} | 12th: ${row.percentage12 || 'N/A'}% | 10th: ${row.percentage10 || 'N/A'}%`
-      );
-      doc.moveDown();
+      // Decorative generic dark rectangle at top left
+      doc.fillColor('#e6e6e6').rect(40, 40, 60, 30).fill();
 
-      // Skills
-      doc.fontSize(16).text('Skills', { underline: true });
-      doc.fontSize(12).text(row.skills || 'N/A');
-      doc.moveDown();
+      // Basic Title styling
+      const name = `${row.firstName || ''} ${row.lastName || ''}`.toUpperCase().trim();
+      doc.fillColor('black').font('Helvetica-Bold').fontSize(24)
+         .text(name || 'CANDIDATE NAME', leftX, 85, { width: leftW, align: 'left', lineGap: 5 });
+      
+      doc.font('Helvetica-Bold').fontSize(12)
+         .text(row.degree ? `PROFESSIONAL ${row.degree}`.toUpperCase() : "PROFESSIONAL CANDIDATE", rightX, 100, { width: rightW, align: 'left' });
 
-      // Experience
-      doc.fontSize(16).text('Experience', { underline: true });
-      doc.fontSize(12).text(row.experience || 'No prior experience listed');
+      // Helper function for diamond dividers
+      const drawDiamond = (y) => {
+        doc.save().translate(lineX, y).rotate(45).rect(-4, -4, 8, 8).fillAndStroke('black', 'black').restore();
+      };
+
+      let leftY = 170;
+      let rightY = 170;
+
+      // LEFT COLUMN: Contact
+      doc.font('Helvetica-Bold').fontSize(11).text('CONTACT', leftX, leftY);
+      leftY += 25;
+      doc.font('Helvetica').fontSize(9);
+      if (row.phone) { doc.text(row.phone, leftX, leftY); leftY += 15; }
+      if (userRow.email) { doc.text(userRow.email, leftX, leftY); leftY += 15; }
+      if (row.address) { doc.text(row.address, leftX, leftY); leftY += 15; }
+      
+      // Separator 1 (Cross Line and Diamond)
+      leftY += 20;
+      doc.strokeColor('black').lineWidth(1).moveTo(leftX, leftY).lineTo(lineX, leftY).stroke();
+      drawDiamond(leftY);
+      leftY += 25;
+
+      // LEFT COLUMN: Skills
+      doc.font('Helvetica-Bold').fontSize(11).text('SKILLS', leftX, leftY);
+      leftY += 25;
+      doc.font('Helvetica').fontSize(9);
+      const skills = (row.skills || 'N/A').split(',').map(s => s.trim()).filter(s => s);
+      skills.forEach(s => {
+         doc.text(s, leftX, leftY);
+         leftY += 15;
+      });
+
+      // RIGHT COLUMN: Education
+      doc.font('Helvetica-Bold').fontSize(11).text('EDUCATION', rightX, rightY);
+      rightY += 25;
+      doc.font('Helvetica-Bold').fontSize(10).text(row.college || 'University Student', rightX, rightY);
+      rightY += 15;
+      doc.font('Helvetica').fontSize(9).text(`${row.degree || 'Degree'} - ${row.stream || 'Stream'}`, rightX, rightY);
+      rightY += 15;
+      doc.text(`CGPA: ${row.cgpa || 'N/A'} | 10th: ${row.percentage10 || 'N/A'}% | 12th: ${row.percentage12 || 'N/A'}%`, rightX, rightY);
+      rightY += 35;
+
+      // Separator 2 (Diamond for right side break)
+      drawDiamond(rightY - 10);
+      
+      // RIGHT COLUMN: Work Experience
+      doc.font('Helvetica-Bold').fontSize(11).text('WORK EXPERIENCE', rightX, rightY);
+      rightY += 25;
+      doc.font('Helvetica-Bold').fontSize(10).text('Professional Detail', rightX, rightY);
+      rightY += 15;
+      const expText = row.experience || 'No advanced experience listed. Ready to contribute effectively to the team and learn new skills rapidly on the job.';
+      doc.font('Helvetica').fontSize(9).text(expText, rightX, rightY, { width: rightW, align: 'left', lineGap: 4 });
+      
+      const expHeight = doc.heightOfString(expText, { width: rightW, lineGap: 4 });
+      rightY += expHeight + 20;
+
+      // Central Vertical Line covering both sides
+      const maxY = Math.max(leftY, rightY) + 20;
+      doc.strokeColor('black').lineWidth(1).moveTo(lineX, 170).lineTo(lineX, maxY).stroke();
 
       doc.end();
     });
@@ -374,7 +414,7 @@ app.get('/api/applications/user/:userId', (req, res) => {
 // 8. Admin: Get all applications with candidate info
 app.get('/api/admin/applications', (req, res) => {
   const query = `
-        SELECT a.id as applicationId, a.status, a.applied_at, a.match_score, a.match_reason, a.available_slots, a.selected_slot,
+        SELECT a.id as applicationId, a.user_id as candidateId, a.status, a.applied_at, a.meeting_link, a.match_score, a.match_reason, a.available_slots, a.selected_slot,
                j.title as jobTitle, j.company,
                u.email,
                p.firstName, p.lastName, p.experience, p.skills, p.degree, p.college, p.phone
@@ -410,7 +450,7 @@ app.post('/api/admin/applications/:appId/status', (req, res) => {
 app.get('/api/company/applications/:companyId', (req, res) => {
   const { companyId } = req.params;
   const query = `
-        SELECT a.id as applicationId, a.status, a.applied_at, a.meeting_link, a.match_score, a.match_reason, a.available_slots, a.selected_slot,
+        SELECT a.id as applicationId, a.user_id as candidateId, a.status, a.applied_at, a.meeting_link, a.match_score, a.match_reason, a.available_slots, a.selected_slot,
                j.title as jobTitle, j.company, j.id as jobId,
                u.email,
                p.firstName, p.lastName, p.experience, p.skills, p.degree, p.college, p.phone
@@ -457,66 +497,6 @@ app.post('/api/applications/:appId/confirm-slot', (req, res) => {
       res.json({ message: 'Interview slot confirmed', meeting_link });
     }
   );
-});
-
-// 12. Applications: AI Match Score
-app.post('/api/applications/:appId/score', async (req, res) => {
-  const { appId } = req.params;
-  
-  if (!ai) return res.status(500).json({ error: 'Server AI not configured (Missing User API Key)' });
-
-  db.get(`
-    SELECT a.*, j.title, j.description, j.skills as job_skills,
-           p.firstName, p.lastName, p.skills as user_skills, p.experience, p.degree
-    FROM applications a
-    JOIN jobs j ON a.job_id = j.id
-    JOIN users u ON a.user_id = u.id
-    LEFT JOIN profiles p ON u.id = p.user_id
-    WHERE a.id = ?
-  `, [appId], async (err, row) => {
-    if (err || !row) return res.status(404).json({ error: 'Application not found' });
-    
-    if (row.match_score) {
-        return res.json({ match_score: row.match_score, match_reason: row.match_reason });
-    }
-
-    const prompt = `
-    You are an expert technical recruiter analyzing a candidate for a role.
-    Job Title: ${row.title}
-    Job Description: ${row.description}
-    Required Skills: ${row.job_skills}
-    
-    Candidate Name: ${row.firstName} ${row.lastName}
-    Candidate Degree: ${row.degree}
-    Candidate Skills: ${row.user_skills}
-    Candidate Experience: ${row.experience}
-    
-    Output a raw JSON object containing EXACTLY:
-    - match_score: An integer from 0 to 100 representing how well the candidate fits the job.
-    - match_reason: 1 to 2 short sentences explaining the reasoning for this score.
-    `;
-
-    try {
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: { responseMimeType: 'application/json' }
-      });
-
-      const result = JSON.parse(response.text);
-      
-      db.run(
-        'UPDATE applications SET match_score = ?, match_reason = ? WHERE id = ?',
-        [result.match_score, result.match_reason, appId],
-        function (updateErr) {
-            if (updateErr) return res.status(500).json({ error: 'Failed to save score' });
-            res.json(result);
-        }
-      );
-    } catch (llmErr) {
-      res.status(500).json({ error: 'AI Error: ' + llmErr.message });
-    }
-  });
 });
 
 // 13. Saved Jobs: Get
@@ -583,6 +563,32 @@ app.post('/api/applications/:appId/messages', (req, res) => {
       res.json({ id: this.lastID, message: 'Message sent' });
     }
   );
+});
+
+// 17. AI Chat Assistant
+app.post('/api/ai-chat', async (req, res) => {
+  try {
+    if (!ai) return res.status(500).json({ error: 'Server AI not configured (Missing User API Key)' });
+    
+    // Expect `{ history: [{role: 'user'|'model', parts: [{text: '...'}]}], message: '...' }`
+    const { history, message } = req.body;
+    
+    const systemInstruction = "You are the BURA Jobs AI Assistant. You help candidates navigate the platform, improve their profiles, and get career advice. Be concise, friendly, and helpful. Format your responses in short paragraphs and use bullet points when applicable. Do not act like you are making external API calls; simply provide advice based on your knowledge base.";
+
+    const chatSession = ai.chats.create({
+      model: 'gemini-2.0-flash',
+      config: {
+        systemInstruction,
+      },
+      history: history || []
+    });
+
+    const response = await chatSession.sendMessage({ message });
+    res.json({ reply: response.text });
+  } catch (err) {
+    console.error('AI Chat Error:', err);
+    res.status(500).json({ error: 'Failed to generate response: ' + err.message });
+  }
 });
 
 // Start Server

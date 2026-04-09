@@ -9,6 +9,7 @@ const app = {
     profile: {}, // stores user profile data
     selectedJobId: null,
     savedJobIds: [], // stores IDs of saved jobs
+    aiChatHistory: [], // stores chat messages natively
   },
 
   API_URL: 'http://localhost:3001/api',
@@ -32,8 +33,9 @@ const app = {
       await this.fetchSavedJobs();
       await this.fetchJobs();
 
-      // Check if profile is complete
-      if (Object.keys(this.state.profile).length > 2) {
+      if (['admin', 'company'].includes(this.state.currentUser.role)) {
+        this.navigate('admin-view');
+      } else if (Object.keys(this.state.profile).length > 2) {
         this.navigate('jobs-view');
       } else {
         this.navigate('profile-view');
@@ -159,11 +161,14 @@ const app = {
       }
     });
 
-    // Ensure nav logo goes to landing if logged out
+    // Ensure nav logo goes to correct dashboard if logged in
     const brand = document.querySelector('.nav-brand');
     if (brand) {
-      brand.onclick = () =>
-        this.navigate(this.state.currentUser ? 'jobs-view' : 'landing-view');
+      brand.onclick = () => {
+        if (!this.state.currentUser) return this.navigate('landing-view');
+        if (['admin', 'company'].includes(this.state.currentUser.role)) return this.navigate('admin-view');
+        this.navigate('jobs-view');
+      };
     }
   },
 
@@ -178,10 +183,12 @@ const app = {
 
       navLinks.innerHTML = `
                 ${adminLink}
+                ${['user'].includes(this.state.currentUser.role) ? `
                 <a class="nav-item ${this.state.currentView === 'jobs-view' ? 'active' : ''}" onclick="app.navigate('jobs-view')">Dashboard</a>
-                ${['user'].includes(this.state.currentUser.role) ? `<a class="nav-item ${this.state.currentView === 'saved-jobs-view' ? 'active' : ''}" onclick="app.navigate('saved-jobs-view')">Saved Jobs</a>` : ''}
+                <a class="nav-item ${this.state.currentView === 'saved-jobs-view' ? 'active' : ''}" onclick="app.navigate('saved-jobs-view')">Saved Jobs</a>
                 <a class="nav-item ${this.state.currentView === 'profile-view' ? 'active' : ''}" onclick="app.navigate('profile-view')">Profile</a>
                 <a class="nav-item ${this.state.currentView === 'applications-view' ? 'active' : ''}" onclick="app.navigate('applications-view')">My Applications</a>
+                ` : ''}
                 <span class="nav-item" onclick="app.logout()">
                     <span class="material-icons-round" style="vertical-align: middle; font-size: 1.2rem;">logout</span>
                 </span>
@@ -233,8 +240,9 @@ const app = {
           await this.fetchSavedJobs();
           await this.fetchJobs();
 
-          // If profile is empty, go to profile, else jobs
-          if (
+          if (['admin', 'company'].includes(this.state.currentUser.role)) {
+            this.navigate('admin-view');
+          } else if (
             Object.keys(this.state.profile).length > 2 ||
             Object.keys(this.state.profile).filter(
               (k) => this.state.profile[k] !== null
@@ -275,7 +283,7 @@ const app = {
             btn.innerText = 'Sign Up';
             toggleText.innerText = 'Already have an account?';
             authToggle.innerText = 'Login here';
-            if (document.getElementById('auth-role-group')) document.getElementById('auth-role-group').style.display = 'block';
+            if (document.getElementById('auth-role-group')) document.getElementById('auth-role-group').style.display = 'flex';
           }
         });
       }
@@ -915,19 +923,17 @@ const app = {
         
         colApps.forEach(ap => {
           const name = ap.firstName ? `${ap.firstName} ${ap.lastName}` : ap.email;
-          const scoreHtml = ap.match_score 
-            ? `<div class="match-score-badge" onclick="alert('Score: ${ap.match_score}/100\\\\nReason: ${ap.match_reason}')"><span class="material-icons-round" style="font-size: 1rem;">auto_awesome</span> ${ap.match_score}% Match</div>`
-            : `<div class="match-score-badge" id="score-badge-${ap.applicationId}" onclick="app.calculateMatchScore(${ap.applicationId})"><span class="material-icons-round" style="font-size: 1rem;">auto_awesome</span> Calculate AI Score</div>`;
           
           html += `
             <div class="kanban-card" draggable="true" ondragstart="app.drag(event, ${ap.applicationId})" ondragend="app.dragEnd(event)">
               <div class="k-card-title">${name}</div>
               <div class="k-card-meta">${ap.jobTitle}</div>
-              ${scoreHtml}
+              ${ap.meeting_link ? `<div style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--primary-color);">⌚ ${ap.selected_slot}</div>` : ''}
               <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                <button class="btn btn-secondary btn-small" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;" onclick="alert('Profile:\\\\nDegree: ${ap.degree || 'N/A'}\\\\nSkills: ${ap.skills || 'N/A'}')">Profile</button>
+                <button class="btn btn-secondary btn-small" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;" onclick="window.open('${this.API_URL}/profile/${ap.candidateId}/resume', '_blank')">Profile</button>
                 <button class="btn btn-secondary btn-small" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;" onclick="app.openChat(${ap.applicationId})"><span class="material-icons-round" style="font-size: 1rem; vertical-align: middle;">chat</span></button>
                 ${col.id === 'Shortlisted' || col.id === 'Under Review' ? `<button class="btn btn-primary btn-small" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;" onclick="app.scheduleInterview(${ap.applicationId})">Interview</button>` : ''}
+                ${ap.meeting_link ? `<button class="btn btn-primary btn-small" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: var(--success-color); border: none;" onclick="window.open('${ap.meeting_link}', '_blank')"><span class="material-icons-round" style="font-size: 0.9rem; vertical-align: middle;">videocam</span> Join</button>` : ''}
               </div>
             </div>
           `;
@@ -979,24 +985,6 @@ const app = {
     if (appId) {
       await this.updateApplicationStatus(appId, newStatus);
       this.renderAdminDashboard();
-    }
-  },
-
-  async calculateMatchScore(appId) {
-    const scoreBadge = document.getElementById(`score-badge-${appId}`);
-    if (scoreBadge) {
-        scoreBadge.innerHTML = '<span class="material-icons-round" style="font-size: 1rem;">hourglass_empty</span> Analyzing...';
-    }
-
-    try {
-      const res = await fetch(`${this.API_URL}/applications/${appId}/score`, { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      
-      this.renderAdminDashboard();
-    } catch (err) {
-      alert(err.message);
-      if (scoreBadge) scoreBadge.innerHTML = '<span class="material-icons-round" style="font-size: 1rem;">auto_awesome</span> Calculate AI Score';
     }
   },
 
@@ -1162,6 +1150,88 @@ const app = {
       input.value = '';
       await this.loadMessages();
     } catch(err) { console.error(err); }
+  },
+
+  // --- AI Chatbot Methods ---
+  toggleAIChat() {
+    const modal = document.getElementById('ai-chat-modal');
+    if (modal.classList.contains('hidden')) {
+      modal.classList.remove('hidden');
+      if (!this.state.aiChatHistory || this.state.aiChatHistory.length === 0) {
+        this.appendAIChatMessage('model', 'Hello! I am the BURA Jobs AI Assistant. How can I help you today?');
+        this.state.aiChatHistory = [{ role: 'model', text: 'Hello! I am the BURA Jobs AI Assistant. How can I help you today?' }];
+      }
+      setTimeout(() => document.getElementById('ai-chat-input').focus(), 100);
+    } else {
+      modal.classList.add('hidden');
+    }
+  },
+
+  async sendAIChat() {
+    const input = document.getElementById('ai-chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    this.appendAIChatMessage('user', text);
+    input.value = '';
+    
+    if (!this.state.aiChatHistory) this.state.aiChatHistory = [];
+    const requestHistory = this.state.aiChatHistory.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.text }]
+    }));
+    
+    this.state.aiChatHistory.push({ role: 'user', text });
+    this.appendAIChatMessage('model', '...', true);
+    
+    try {
+      const res = await fetch(`${this.API_URL}/ai-chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ history: requestHistory, message: text })
+      });
+      
+      const data = await res.json();
+      this.removeAITypingIndicator();
+      
+      if (!res.ok) throw new Error(data.error || 'Chat failed');
+      
+      this.state.aiChatHistory.push({ role: 'model', text: data.reply });
+      this.appendAIChatMessage('model', data.reply);
+      
+    } catch (err) {
+      this.removeAITypingIndicator();
+      this.appendAIChatMessage('model', 'Error: ' + err.message);
+    }
+  },
+  
+  appendAIChatMessage(role, text, isTyping = false) {
+    const container = document.getElementById('ai-chat-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.style.alignSelf = role === 'user' ? 'flex-end' : 'flex-start';
+    msgDiv.style.background = role === 'user' ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)';
+    msgDiv.style.border = role === 'model' ? '1px solid var(--border-color)' : 'none';
+    msgDiv.style.color = role === 'user' ? '#fff' : 'var(--text-primary)';
+    msgDiv.style.padding = '0.8rem 1rem';
+    msgDiv.style.borderRadius = '16px';
+    if(role === 'user') msgDiv.style.borderBottomRightRadius = '4px';
+    else msgDiv.style.borderBottomLeftRadius = '4px';
+    msgDiv.style.maxWidth = '85%';
+    msgDiv.style.lineHeight = '1.4';
+    msgDiv.style.fontSize = '0.95rem';
+    if (isTyping) msgDiv.id = 'ai-typing-indicator';
+    
+    let formattedText = text.replace(/\n/g, '<br>');
+    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    msgDiv.innerHTML = formattedText;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  },
+  
+  removeAITypingIndicator() {
+    const indicator = document.getElementById('ai-typing-indicator');
+    if (indicator) indicator.remove();
   }
 };
 

@@ -11,8 +11,8 @@
   --border-color: rgba(255, 255, 255, 0.1);
 
   /* Glassmorphism settings */
-  --glass-bg: rgba(22, 27, 34, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(22, 27, 34, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
   /* Typography */
@@ -37,7 +37,7 @@
   --success-color: #1a7f37;
   --border-color: rgba(31, 35, 40, 0.15);
   
-  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.3);
   --glass-border: rgba(31, 35, 40, 0.1);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
 
@@ -60,12 +60,41 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  /* Subtle background pattern */
-  background-image:
-    radial-gradient(at 0% 0%, var(--glow-1) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, var(--glow-2) 0px, transparent 50%);
   background-attachment: fixed;
   overflow-x: hidden;
+  position: relative;
+}
+
+body::before, body::after {
+  content: '';
+  position: fixed;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  opacity: 0.3;
+  animation: floatOrb 25s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+
+body::before {
+  top: -10%;
+  left: -20%;
+  background: var(--primary-color);
+}
+
+body::after {
+  bottom: -10%;
+  right: -20%;
+  background: var(--accent-color);
+  animation-delay: -12s;
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30%, 15%) scale(1.2); }
+  100% { transform: translate(-10%, 30%) scale(0.9); }
 }
 
 /* Utilities */
@@ -452,6 +481,11 @@ h2 {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .auth-toggle {
