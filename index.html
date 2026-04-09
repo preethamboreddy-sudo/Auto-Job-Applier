@@ -22,12 +22,14 @@
       <!-- Dynamically populated based on auth state -->
     </div>
     
-    <!-- Language Translator Dropdown -->
-    <div id="google_translate_element" style="margin-left: auto;"></div>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <!-- Language Translator Dropdown -->
+      <div id="google_translate_element" style="height: 40px; display: flex; align-items: center;"></div>
 
-    <button id="theme-toggle" class="btn" onclick="app.toggleTheme()" style="margin-left: 1rem; background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); padding: 0;">
-      <span class="material-icons-round" id="theme-icon">light_mode</span>
-    </button>
+      <button id="theme-toggle" class="btn" onclick="app.toggleTheme()" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); padding: 0; box-shadow: var(--glass-shadow);">
+        <span class="material-icons-round" id="theme-icon">light_mode</span>
+      </button>
+    </div>
   </nav>
 
   <!-- Main Container -->
