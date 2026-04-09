@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 // Connect to SQLite database (will create jobapp.db file if it doesn't exist)
-const dbPath = path.resolve(__dirname, 'jobapp.db');
+const dbPath = process.env.DB_PATH || path.resolve(__dirname, 'jobapp.db');
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error opening database', err.message);

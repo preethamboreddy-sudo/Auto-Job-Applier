@@ -8,7 +8,7 @@ const { GoogleGenAI } = require('@google/genai');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3001; // Backend runs on 3001, frontend on 3000
+const PORT = process.env.PORT || 3001; // Backend runs on process.env.PORT (Railway) or 3001
 
 // Setup Multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });

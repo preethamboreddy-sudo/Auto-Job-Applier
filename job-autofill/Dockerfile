@@ -14,7 +14,7 @@ COPY . .
 USER node
 
 # Expose port to outside world
-EXPOSE 3000
+EXPOSE 3001
 
 # Start command
 CMD [ "npm", "start" ]

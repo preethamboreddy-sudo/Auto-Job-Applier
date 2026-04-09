@@ -12,7 +12,7 @@ const app = {
     aiChatHistory: [], // stores chat messages natively
   },
 
-  API_URL: 'http://localhost:3001/api',
+  API_URL: '/api', // Will resolve dynamically to current origin on Railway
   mockJobs: [], // Will be fetched from backend
 
   async init() {
