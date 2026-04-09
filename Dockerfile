@@ -10,8 +10,7 @@ RUN npm install
 # Bundle app source
 COPY --chown=node:node . .
 
-# Ensure standard permissions
-USER node
+# Run as default root to ensure Railway Volumes allow SQLite R/W access
 
 # Expose port to outside world
 EXPOSE 3001
