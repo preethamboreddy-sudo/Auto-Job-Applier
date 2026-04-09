@@ -571,16 +571,22 @@ app.post('/api/ai-chat', async (req, res) => {
     if (!ai) return res.status(500).json({ error: 'Server AI not configured (Missing User API Key)' });
     
     // Expect `{ history: [{role: 'user'|'model', parts: [{text: '...'}]}], message: '...' }`
-    const { history, message } = req.body;
+    let { history, message } = req.body;
+    history = history || [];
+    
+    // Gemini API strictly requires that the first message in a chat history is from the 'user'
+    while (history.length > 0 && history[0].role === 'model') {
+      history.shift();
+    }
     
     const systemInstruction = "You are the BURA Jobs AI Assistant. You help candidates navigate the platform, improve their profiles, and get career advice. Be concise, friendly, and helpful. Format your responses in short paragraphs and use bullet points when applicable. Do not act like you are making external API calls; simply provide advice based on your knowledge base.";
 
     const chatSession = ai.chats.create({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       config: {
         systemInstruction,
       },
-      history: history || []
+      history: history
     });
 
     const response = await chatSession.sendMessage({ message });
