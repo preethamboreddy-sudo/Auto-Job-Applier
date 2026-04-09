@@ -471,14 +471,14 @@ app.get('/api/company/applications/:companyId', (req, res) => {
 // 11. Applications: Schedule interview
 app.post('/api/applications/:appId/interview', (req, res) => {
   const { appId } = req.params;
-  const { available_slots } = req.body;
+  const { available_slots, meeting_link } = req.body;
 
   db.run(
-    `UPDATE applications SET status = 'Interviewing', available_slots = ? WHERE id = ?`,
-    [JSON.stringify(available_slots), appId],
+    `UPDATE applications SET status = 'Interviewing', available_slots = ?, meeting_link = ? WHERE id = ?`,
+    [JSON.stringify(available_slots), meeting_link, appId],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Interview slots offered', available_slots });
+      res.json({ message: 'Interview slots offered', available_slots, meeting_link });
     }
   );
 });
@@ -487,14 +487,17 @@ app.post('/api/applications/:appId/interview', (req, res) => {
 app.post('/api/applications/:appId/confirm-slot', (req, res) => {
   const { appId } = req.params;
   const { selected_slot } = req.body;
-  const meeting_link = `https://meet.jit.si/BURA_Interview_${appId}_${Date.now()}`;
 
   db.run(
-    `UPDATE applications SET selected_slot = ?, meeting_link = ? WHERE id = ?`,
-    [selected_slot, meeting_link, appId],
+    `UPDATE applications SET selected_slot = ? WHERE id = ?`,
+    [selected_slot, appId],
     function (err) {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Interview slot confirmed', meeting_link });
+      
+      db.get(`SELECT meeting_link FROM applications WHERE id = ?`, [appId], (err, row) => {
+        const link = row ? row.meeting_link : null;
+        res.json({ message: 'Interview slot confirmed', meeting_link: link });
+      });
     }
   );
 });

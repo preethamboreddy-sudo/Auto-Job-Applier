@@ -1010,12 +1010,15 @@ const app = {
     
     const slots = input.split(',').map(s => s.trim()).filter(s => s);
     if (slots.length === 0) return;
+
+    const linkInput = prompt('Enter your Video Meeting Link (Zoom, Google Meet, Microsoft Teams, etc.):', 'https://meet.google.com/new');
+    if (!linkInput) return; // Cancelled
     
     try {
       const res = await fetch(`${this.API_URL}/applications/${appId}/interview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ available_slots: slots }),
+        body: JSON.stringify({ available_slots: slots, meeting_link: linkInput.trim() }),
       });
 
       if (!res.ok) throw new Error('Failed to schedule interview');
